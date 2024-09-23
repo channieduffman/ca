@@ -2,7 +2,9 @@
 
 *ca* is a minimal, specialized file management tool used from the command line.
 
-Its direct purpose is to facilitate in-class assignments. It attempts to prevent the user from making any serious mistakes (overriding files, say) but should not be considered robust. I intend to improve this script.
+Its direct purpose is to facilitate in-class assignments. It attempts to prevent the user from making any serious mistakes (overriding files, say) but should not be considered robust. 
+
+The personal nature of the problem this tool solves is evident in the source. *ca* is not intended for general use, but I do plan to improve its portability and security. For now, this does what I need it to.
 
 ## Basic Usage
 
