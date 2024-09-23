@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+ROOT="$HOME/school/fall_2024/cs_3358/class_activities"
+USAGE='usage: ca [-h | -p | -l | -n | -e | -d | -c | -m] integer_id [cpp|txt]'
+
+# add acceptable file types separated by bars `|`
+TYPES='(cpp|txt)'
+
+usage() {
+    if [[ $1 == 'err' ]]; then
+        echo $USAGE 1>&2
+    else
+        echo $USAGE
+    fi
+}
+
+get_path() {
+    ADD=$(ls $ROOT | grep -E "ca$1\.$TYPES?") 
+    echo $ADD
+}
+
+case "$1" in 
+    ''|'-h') usage ;;
+    # print the contents of the specified activity
+    '-p')
+        if [[ -z "$2" ]]; then
+            usage err
+        elif [[ -z $(get_path $2) ]]; then
+            echo 'error: no such file exists' 1>&2
+        else
+            cat $ROOT/$(get_path $2)
+        fi
+    ;;
+    # list all activities
+    '-l') ls -1 $ROOT ;;
+    # create a new activity
+    '-n') 
+        if [[ -z "$3" ]]; then
+            echo "error: no extension provided; accepted: $TYPES" 1>&2
+        # accept only cpp or txt extensions
+        elif [[ ! "$3" =~ $TYPES ]]; then
+            echo "error: invalid extension; accepted: $TYPES" 1>&2
+        # prevent overriding existing files
+        elif [[ -f "$ROOT/$(get_path $2)" ]]; then
+            echo "error: file exists; use option '-e' to edit" 1>&2
+        else
+            touch "$ROOT/ca$2.$3" && nvim "$ROOT/ca$2.$3"
+        fi
+    ;;
+    # edit an existing file
+    '-e')
+        FILE="$ROOT/$(get_path $2)"
+        if [[ -f "$FILE" ]]; then
+            nvim "$FILE"
+        fi
+    ;;
+    # delete specified file
+    '-d')
+        if [[ ! "$2" =~ [0-9]+ ]]; then
+            usage err
+        else
+            rm $ROOT/*$2*
+        fi
+    ;;
+    # attempt to compile and run the specified file
+    '-m')
+        g++ $ROOT/$(get_path $2)
+        if [[ $? == 0 ]]; then
+            "$HOME/a.out"
+        fi
+    ;;
+    # clean up compiled files in home
+    '-c') rm $HOME/*.out ;;
+    # testing
+    '-t') ls $ROOT | grep -E "ca$2\.$TYPES?" ;;
+    *) usage err;; 
+esac
+
+
